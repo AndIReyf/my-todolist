@@ -1,0 +1,37 @@
+.TodoList {
+  padding: 12px;
+  border-radius: 5px;
+
+  .todoListTitle {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    margin-bottom: 7px;
+  }
+
+  .lists {
+    li {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 5px;
+
+      label {
+        cursor: pointer;
+      }
+    }
+  }
+  .buttonBox{
+    display: flex;
+    justify-content: space-between;
+  }
+}
+
+.errorText {
+  color: #f44848;
+}
+
+.done {
+  opacity: 0.5;
+}
