@@ -1,14 +1,14 @@
-import React, {ChangeEvent} from "react";
+import React from "react";
 import './TodoList.scss';
 import {FilterType} from "../App";
 import {AddItemForm} from "./AddItemForm/AddItemForm";
 import {MyButton} from "./Button/MyButton";
 import {EditableTitle} from "./EditableTitle/EditableTitle";
-import {Checkbox, IconButton} from "@material-ui/core";
+import {IconButton} from "@material-ui/core";
 import DeleteIcon from '@material-ui/icons/Delete';
 import {useDispatch, useSelector} from "react-redux";
 import {RootReducerType} from "../Redux/store";
-import {addTaskAC, changeTaskStatus, changeTitleTaskAC, deleteTaskAC} from "../State/task-reducer";
+import {addTaskAC, deleteTaskAC} from "../State/task-reducer";
 import {Task} from "./Task/Task";
 
 export type TasksType = {
