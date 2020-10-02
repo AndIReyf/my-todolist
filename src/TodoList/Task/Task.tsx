@@ -4,7 +4,7 @@ import {Checkbox, IconButton} from "@material-ui/core";
 import {EditableTitle} from "../EditableTitle/EditableTitle";
 import DeleteIcon from "@material-ui/icons/Delete";
 import {useDispatch} from "react-redux";
-import {TaskType} from "../TodoList";
+import {TaskStatus, TaskType} from "../../api/todolist-api";
 
 type PropsType = {
     taskTitleError: string
@@ -17,7 +17,8 @@ export const Task = React.memo(function Task(props: PropsType) {
 
     const dispatch = useDispatch();
     const taskStatusChange = React.useCallback((e: ChangeEvent<HTMLInputElement>) => {
-        dispatch(changeTaskStatus(props.todoListId, props.task.id, e.currentTarget.checked))
+        dispatch(changeTaskStatus(props.todoListId, props.task.id,
+            e.currentTarget.checked ? TaskStatus.Completed : TaskStatus.New))
     }, [dispatch])
     const changeTaskTitle = React.useCallback((title: string) => {
         dispatch(changeTitleTaskAC(props.todoListId, props.task.id, title))
@@ -26,11 +27,11 @@ export const Task = React.memo(function Task(props: PropsType) {
         dispatch(changeTitleTaskAC(props.todoListId, props.task.id, title))
     }, [dispatch])
 
-    return <li className={props.task.isDone ? 'done' : ''}>
+    return <li className={props.task.status === TaskStatus.Completed ? 'done' : ''}>
         <Checkbox
             color="primary"
             id={props.task.id}
-            checked={props.task.isDone}
+            checked={props.task.status === TaskStatus.Completed}
             onChange={taskStatusChange}/>
         <EditableTitle
             error={props.taskTitleError}

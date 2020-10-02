@@ -1,9 +1,8 @@
 import React from "react";
 import {Task} from "./Task";
 import {action} from "@storybook/addon-actions";
-import {Provider} from "react-redux";
-import {store} from "../../Redux/store";
 import {ReduxStoreProviderDecorator} from "../../stories/ReduxStoreProviderDecorator";
+import {TaskPriority, TaskStatus} from "../../api/todolist-api";
 
 export default {
     title: 'Task',
@@ -18,10 +17,20 @@ export const TaskExample = () => {
         <>
             <Task taskTitleError={'Error'} deleteTask={del}
                   todoListId={'id1'}
-                  task={{id: '1', isDone: true, title: 'React'}}/>
+                  task={{id: '1', todoListId: '1',status: TaskStatus.New, title: 'React', order: 0,
+                      description: '',
+                      deadline: '',
+                      addedDate: '',
+                      startDate: '',
+                      priority: TaskPriority.Low}}/>
             <Task taskTitleError={'Error'} deleteTask={del}
                   todoListId={'id2'}
-                  task={{id: '2', isDone: false, title: 'Redux'}}/>
+                  task={{id: '2', todoListId: '2', status: TaskStatus.Completed, title: 'Redux',order: 0,
+                      description: '',
+                      deadline: '',
+                      addedDate: '',
+                      startDate: '',
+                      priority: TaskPriority.Low}}/>
         </>
     )
 }

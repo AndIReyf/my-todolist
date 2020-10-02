@@ -1,18 +1,17 @@
-import {TodoListsType} from "../TodoList/TodoList";
 import {
     addTodoListAC,
     changeFilterTodoListAC,
-    changeTitleTodoListAC,
-    removeTodoListAC,
+    changeTitleTodoListAC, FilterType,
+    removeTodoListAC, TodoListDomainType,
     todolistReducer
 } from "./todolist-reducer";
 import {v1} from "uuid";
 
 const todoListId1 = v1();
 const todoListId2 = v1();
-const state: Array<TodoListsType> = [
-    {id: todoListId1, title: 'What to learn', filter: 'all'},
-    {id: todoListId2, title: 'What to Buy', filter: 'all'}
+const state: Array<TodoListDomainType> = [
+    {id: todoListId1, title: 'What to learn', filter: 'all', order: 0, addedDate: ''},
+    {id: todoListId2, title: 'What to Buy', filter: 'all', order: 0, addedDate: ''}
 ]
 
 test('Add todolist', () => {
@@ -40,7 +39,7 @@ test('Change todolist title', () => {
     expect(newState.length).toBe(2)
 })
 test('Change todolist filter', () => {
-    const filter = 'active'
+    const filter: FilterType = 'active'
     const newState = todolistReducer(state, changeFilterTodoListAC(filter, todoListId2))
 
     expect(newState[0].filter).toBe('all')

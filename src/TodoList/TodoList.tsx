@@ -1,6 +1,5 @@
 import React from "react";
 import './TodoList.scss';
-import {FilterType} from "../App";
 import {AddItemForm} from "./AddItemForm/AddItemForm";
 import {MyButton} from "./Button/MyButton";
 import {EditableTitle} from "./EditableTitle/EditableTitle";
@@ -10,20 +9,13 @@ import {useDispatch, useSelector} from "react-redux";
 import {RootReducerType} from "../Redux/store";
 import {addTaskAC, deleteTaskAC} from "../State/task-reducer";
 import {Task} from "./Task/Task";
+import {TaskStatus, TaskType} from "../api/todolist-api";
+import {FilterType} from "../State/todolist-reducer";
 
 export type TasksType = {
     [key: string]: Array<TaskType>
 }
-export type TaskType = {
-    id: string
-    isDone: boolean
-    title: string
-}
-export type TodoListsType = {
-    id: string
-    title: string
-    filter: FilterType
-}
+
 type PropsType = {
     id: string
     title: string
@@ -74,10 +66,10 @@ export const TodoList = React.memo( function TodoList(props: PropsType) {
     let tasksForTodoList = allTodoListTasks;
 
     if (props.filter === 'active') {
-        tasksForTodoList = allTodoListTasks.filter(t => !t.isDone);
+        tasksForTodoList = allTodoListTasks.filter(t => t.status === TaskStatus.New);
     }
     if (props.filter === 'completed') {
-        tasksForTodoList = allTodoListTasks.filter(t => t.isDone);
+        tasksForTodoList = allTodoListTasks.filter(t => t.status === TaskStatus.Completed);
     }
 
     return (
