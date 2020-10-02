@@ -8,7 +8,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {
     addTodoListAC,
     changeFilterTodoListAC,
-    changeTitleTodoListAC,
+    changeTitleTodoListAC, fetchTodoListsTC,
     FilterType,
     removeTodoListAC, TodoListDomainType
 } from "./State/todolist-reducer";
@@ -16,11 +16,15 @@ import {RootReducerType} from "./Redux/store";
 
 export function App() {
 
-    const todoListErrorText: string = 'Title is required. Enter some title!!!'
+    const todoListErrorText: string = 'Title is required. Enter the title!'
     const todoListTitle: string = 'Create List'
 
     const dispatch = useDispatch()
     const todoLists = useSelector<RootReducerType, Array<TodoListDomainType>>(state => state.todoLists)
+
+    React.useEffect(() => {
+        dispatch(fetchTodoListsTC())
+    }, [])
 
     const todoFilter = React.useCallback((filter: FilterType, todoListId: string) => {
         dispatch(changeFilterTodoListAC(filter, todoListId))

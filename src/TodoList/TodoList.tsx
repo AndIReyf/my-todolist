@@ -7,7 +7,7 @@ import {IconButton} from "@material-ui/core";
 import DeleteIcon from '@material-ui/icons/Delete';
 import {useDispatch, useSelector} from "react-redux";
 import {RootReducerType} from "../Redux/store";
-import {addTaskAC, deleteTaskAC} from "../State/task-reducer";
+import {addTaskAC, deleteTaskAC, fetchTasksTC} from "../State/task-reducer";
 import {Task} from "./Task/Task";
 import {TaskStatus, TaskType} from "../api/todolist-api";
 import {FilterType} from "../State/todolist-reducer";
@@ -27,12 +27,16 @@ type PropsType = {
 
 export const TodoList = React.memo( function TodoList(props: PropsType) {
 
-    const taskErrorText: string = 'Task is required. Enter some task!!!';
+    const taskErrorText: string = 'Task is required. Enter the task!';
     const taskTitleError: string = 'Task required';
     const todoListTitleError: string = 'Title required';
 
     const dispatch = useDispatch()
     const tasks = useSelector<RootReducerType, Array<TaskType>>(state => state.tasks[props.id])
+
+    React.useEffect(() => {
+        dispatch(fetchTasksTC(props.id))
+    }, [])
 
     const setTaskFilterAll = React.useCallback(() => {
         props.todoFilter('all', props.id);

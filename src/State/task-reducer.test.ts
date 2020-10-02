@@ -1,6 +1,6 @@
 import {TasksType} from "../TodoList/TodoList";
 import {v1} from "uuid";
-import {addTaskAC, changeTaskStatus, changeTitleTaskAC, deleteTaskAC, taskReducer} from "./task-reducer";
+import {addTaskAC, changeTaskStatus, changeTitleTaskAC, deleteTaskAC, setTasks, taskReducer} from "./task-reducer";
 import {addTodoListAC} from "./todolist-reducer";
 import {TaskPriority, TaskStatus} from "../api/todolist-api";
 
@@ -8,18 +8,28 @@ const todoListId1 = v1();
 const todoListId2 = v1();
 const state: TasksType = {
     [todoListId1]: [
-        {id: v1(), title: 'Html&Css', status: TaskStatus.New, description: '', deadline: '', addedDate: '',
-            startDate: '', priority: TaskPriority.Low, order: 0, todoListId: todoListId1},
-        {id: v1(), title: 'JS', status: TaskStatus.New, description: '', deadline: '', addedDate: '',
-            startDate: '', priority: TaskPriority.Low, order: 0, todoListId: todoListId1},
-        {id: v1(), title: 'React', status: TaskStatus.New, description: '', deadline: '', addedDate: '',
-            startDate: '', priority: TaskPriority.Low, order: 0, todoListId: todoListId1}
+        {
+            id: v1(), title: 'Html&Css', status: TaskStatus.New, description: '', deadline: '', addedDate: '',
+            startDate: '', priority: TaskPriority.Low, order: 0, todoListId: todoListId1
+        },
+        {
+            id: v1(), title: 'JS', status: TaskStatus.New, description: '', deadline: '', addedDate: '',
+            startDate: '', priority: TaskPriority.Low, order: 0, todoListId: todoListId1
+        },
+        {
+            id: v1(), title: 'React', status: TaskStatus.New, description: '', deadline: '', addedDate: '',
+            startDate: '', priority: TaskPriority.Low, order: 0, todoListId: todoListId1
+        }
     ],
     [todoListId2]: [
-        {id: v1(), title: 'Milk', status: TaskStatus.New, description: '', deadline: '', addedDate: '',
-            startDate: '', priority: TaskPriority.Low, order: 0, todoListId: todoListId2},
-        {id: v1(), title: 'Bread', status: TaskStatus.New, description: '', deadline: '', addedDate: '',
-            startDate: '', priority: TaskPriority.Low, order: 0, todoListId: todoListId2}
+        {
+            id: v1(), title: 'Milk', status: TaskStatus.New, description: '', deadline: '', addedDate: '',
+            startDate: '', priority: TaskPriority.Low, order: 0, todoListId: todoListId2
+        },
+        {
+            id: v1(), title: 'Bread', status: TaskStatus.New, description: '', deadline: '', addedDate: '',
+            startDate: '', priority: TaskPriority.Low, order: 0, todoListId: todoListId2
+        }
     ]
 }
 
@@ -73,4 +83,12 @@ test('Add new property when new todo is added', () => {
     }
 
     expect(keys.length).toBe(3)
+})
+test('Tasks should be add for todolist', () => {
+    const action = setTasks(todoListId1, state[todoListId1])
+    const newState = taskReducer({
+        todoListId1: []
+    }, action)
+
+    expect(newState[todoListId1].length).toBe(3)
 })
