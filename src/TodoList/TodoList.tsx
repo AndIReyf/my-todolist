@@ -7,7 +7,7 @@ import {IconButton} from "@material-ui/core";
 import DeleteIcon from '@material-ui/icons/Delete';
 import {useDispatch, useSelector} from "react-redux";
 import {RootReducerType} from "../Redux/store";
-import {addTaskAC, deleteTaskAC, fetchTasksTC} from "../State/task-reducer";
+import {addTaskTC, deleteTaskTC, fetchTasksTC} from "../State/task-reducer";
 import {Task} from "./Task/Task";
 import {TaskStatus, TaskType} from "../api/todolist-api";
 import {FilterType} from "../State/todolist-reducer";
@@ -51,11 +51,11 @@ export const TodoList = React.memo( function TodoList(props: PropsType) {
     }, [props.todoFilter,props.id])
 
     const deleteTask = React.useCallback((id: string, todoListId: string) => {
-        dispatch(deleteTaskAC(todoListId, id))
+        dispatch(deleteTaskTC(todoListId, id))
     }, [dispatch])
 
     const addNewTask = React.useCallback((title: string) => {
-        dispatch(addTaskAC(title, props.id))
+        dispatch(addTaskTC(props.id, title))
     }, [dispatch])
 
     const changeTodoListTitle = React.useCallback((title: string) => {

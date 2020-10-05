@@ -1,6 +1,14 @@
 import {TasksType} from "../TodoList/TodoList";
 import {v1} from "uuid";
-import {addTaskAC, changeTaskStatus, changeTitleTaskAC, deleteTaskAC, setTasks, taskReducer} from "./task-reducer";
+import {
+    addTaskAC,
+    changeTaskTitleAC,
+    deleteTaskAC,
+    setTasks,
+    taskReducer,
+    UpdateDomainTaskType,
+    updateTaskAC
+} from "./task-reducer";
 import {addTodoListAC} from "./todolist-reducer";
 import {TaskPriority, TaskStatus} from "../api/todolist-api";
 
@@ -34,13 +42,15 @@ const state: TasksType = {
 }
 
 test('Add task', () => {
-    const title = 'New task title'
-    const newState = taskReducer(state, addTaskAC(title, todoListId2))
+    const action = addTaskAC({
+        todoListId: todoListId2, id: 'ID', status: TaskStatus.New, priority: 0,
+        startDate: '', addedDate: '', deadline: '', description: '', order: 0, title: 'Title'
+    })
+    const newState = taskReducer(state, action)
 
-    expect(newState[todoListId2][2].title).toBe(title)
-    expect(newState[todoListId2][2].status).toEqual(TaskStatus.New)
-    expect(newState[todoListId2][0].title).toBe('Milk')
-    expect(newState[todoListId2][0].status).toBe(TaskStatus.New)
+    expect(newState[todoListId2][0].title).toBe('Title')
+    expect(newState[todoListId2][0].status).toEqual(TaskStatus.New)
+    expect(newState[todoListId2][0].id).toBe('ID')
     expect(newState[todoListId2].length).toBe(3)
 })
 test('Delete task', () => {
@@ -54,7 +64,7 @@ test('Delete task', () => {
 test('Change task title', () => {
     const title = 'New title'
     const taskId = state[todoListId2][0].id
-    const newState = taskReducer(state, changeTitleTaskAC(todoListId2, taskId, title))
+    const newState = taskReducer(state, changeTaskTitleAC(todoListId2, taskId, title))
 
     expect(newState[todoListId2][0].title).toBe(title)
     expect(newState[todoListId2][1].title).toBe('Bread')
@@ -62,18 +72,25 @@ test('Change task title', () => {
     expect(newState[todoListId2].length).toBe(2)
 })
 test('Change task status', () => {
-    const status = TaskStatus.Completed
+    const model: UpdateDomainTaskType = {
+        status: TaskStatus.Completed,
+        deadline: '',
+        description: '',
+        priority: TaskPriority.Low,
+        startDate: '',
+        title: 'Title'
+    }
     const taskId = state[todoListId2][0].id
-    const newState = taskReducer(state, changeTaskStatus(todoListId2, taskId, status))
+    const newState = taskReducer(state, updateTaskAC(todoListId2, taskId, model))
 
-    expect(newState[todoListId2][0].status).toBe(status)
-    expect(newState[todoListId2][0].title).toBe('Milk')
+    expect(newState[todoListId2][0].status).toBe(TaskStatus.Completed)
+    expect(newState[todoListId2][0].title).toBe('Title')
     expect(newState[todoListId2][1].status).toBe(TaskStatus.New)
     expect(newState[todoListId2].length).toBe(2)
 })
 test('Add new property when new todo is added', () => {
-    const title = 'New Todo'
-    const action = addTodoListAC(title)
+
+    const action = addTodoListAC({id: 'ID', addedDate: '', order: 0, title: 'Title'})
     const newState = taskReducer(state, action)
 
     const keys = Object.keys(newState)

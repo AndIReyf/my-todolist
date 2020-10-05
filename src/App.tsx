@@ -6,11 +6,9 @@ import {Container, Grid, Paper} from "@material-ui/core";
 import {Header} from "./Header/Header";
 import {useDispatch, useSelector} from "react-redux";
 import {
-    addTodoListAC,
-    changeFilterTodoListAC,
-    changeTitleTodoListAC, fetchTodoListsTC,
+    changeFilterTodoListAC,createNewTodoListTC, deleteTodoListTC, fetchTodoListsTC,
     FilterType,
-    removeTodoListAC, TodoListDomainType
+    TodoListDomainType, updateTodoListTitleTC
 } from "./State/todolist-reducer";
 import {RootReducerType} from "./Redux/store";
 
@@ -30,13 +28,13 @@ export function App() {
         dispatch(changeFilterTodoListAC(filter, todoListId))
     }, [dispatch])
     const addTodoList = React.useCallback((title: string) => {
-        dispatch(addTodoListAC(title))
+        dispatch(createNewTodoListTC(title))
     }, [dispatch])
     const deleteTodoList = React.useCallback((todoListId: string) => {
-        dispatch(removeTodoListAC(todoListId))
+        dispatch(deleteTodoListTC(todoListId))
     }, [dispatch])
     const setNewTodoTitle = React.useCallback((title: string, id: string) => {
-        dispatch(changeTitleTodoListAC(title, id))
+        dispatch(updateTodoListTitleTC(id, title))
     }, [dispatch])
 
     return (

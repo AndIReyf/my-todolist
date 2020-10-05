@@ -16,10 +16,10 @@ const state: Array<TodoListDomainType> = [
 
 test('Add todolist', () => {
     const title = 'new todolist title'
-    const newState = todolistReducer(state, addTodoListAC(title))
+    const newState = todolistReducer(state, addTodoListAC({id: 'ID', addedDate: '', order: 0, title}))
 
-    expect(newState[2].title).toBe(title)
-    expect(newState[2].filter).toBe('all')
+    expect(newState[0].title).toBe(title)
+    expect(newState[0].filter).toBe('all')
     expect(newState.length).toBe(3)
 })
 test('Remove todolist', () => {

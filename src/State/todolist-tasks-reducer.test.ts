@@ -5,7 +5,7 @@ import {taskReducer} from "./task-reducer";
 test('Should be equal', () => {
     const startTasksState: TasksType = {}
     const startTodoListState: Array<TodoListDomainType> = []
-    const action = addTodoListAC('Title')
+    const action = addTodoListAC({title: 'title', order: 0, addedDate: '', id: 'ID'})
 
     const newTasksState = taskReducer(startTasksState, action)
     const newTodoListState = todolistReducer(startTodoListState, action)
@@ -14,8 +14,8 @@ test('Should be equal', () => {
     const idFromTasks = keys[0]
     const idFromTodoList = newTodoListState[0].id
 
-    expect(idFromTasks).toBe(action.todoListId)
-    expect(idFromTodoList).toBe(action.todoListId)
+    expect(idFromTasks).toBe(action.todoList.id)
+    expect(idFromTodoList).toBe(action.todoList.id)
 })
 test('Empty array should be added when we set todolist', () => {
     const action = setTodoListAC([
