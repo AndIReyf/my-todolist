@@ -9,8 +9,11 @@ import {
     changeFilterTodoListAC,createNewTodoListTC, deleteTodoListTC, fetchTodoListsTC,
     FilterType,
     TodoListDomainType, updateTodoListTitleTC
-} from "./State/todolist-reducer";
+} from "./Redux/State/todolist-reducer";
 import {RootReducerType} from "./Redux/store";
+import {Preloader} from "./TodoList/Preloader/Preloader";
+import {MySnackbar} from "./TodoList/Snackbar/Snackbar";
+import {StatusType} from "./Redux/State/app-reducer";
 
 export function App() {
 
@@ -19,6 +22,7 @@ export function App() {
 
     const dispatch = useDispatch()
     const todoLists = useSelector<RootReducerType, Array<TodoListDomainType>>(state => state.todoLists)
+    const status = useSelector<RootReducerType, StatusType>(state => state.app.status)
 
     React.useEffect(() => {
         dispatch(fetchTodoListsTC())
@@ -27,12 +31,15 @@ export function App() {
     const todoFilter = React.useCallback((filter: FilterType, todoListId: string) => {
         dispatch(changeFilterTodoListAC(filter, todoListId))
     }, [dispatch])
+
     const addTodoList = React.useCallback((title: string) => {
         dispatch(createNewTodoListTC(title))
     }, [dispatch])
+
     const deleteTodoList = React.useCallback((todoListId: string) => {
         dispatch(deleteTodoListTC(todoListId))
     }, [dispatch])
+
     const setNewTodoTitle = React.useCallback((title: string, id: string) => {
         dispatch(updateTodoListTitleTC(id, title))
     }, [dispatch])
@@ -40,6 +47,10 @@ export function App() {
     return (
         <div className="App">
             <Header/>
+            {
+                status === 'loading' && <Preloader/>
+            }
+            <MySnackbar/>
             <Container maxWidth={"lg"}>
                 <Grid container>
                     <AddItemForm

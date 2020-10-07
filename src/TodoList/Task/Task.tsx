@@ -1,5 +1,5 @@
 import React, {ChangeEvent} from "react";
-import {updateTaskTC} from "../../State/task-reducer";
+import {updateTaskTC} from "../../Redux/State/task-reducer";
 import {Checkbox, IconButton} from "@material-ui/core";
 import {EditableTitle} from "../EditableTitle/EditableTitle";
 import DeleteIcon from "@material-ui/icons/Delete";

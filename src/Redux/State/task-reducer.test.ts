@@ -1,4 +1,4 @@
-import {TasksType} from "../TodoList/TodoList";
+import {TasksType} from "../../TodoList/TodoList";
 import {v1} from "uuid";
 import {
     addTaskAC,
@@ -10,7 +10,7 @@ import {
     updateTaskAC
 } from "./task-reducer";
 import {addTodoListAC} from "./todolist-reducer";
-import {TaskPriority, TaskStatus} from "../api/todolist-api";
+import {TaskPriority, TaskStatus} from "../../api/todolist-api";
 
 const todoListId1 = v1();
 const todoListId2 = v1();

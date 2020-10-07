@@ -1,52 +1,9 @@
 import {AddTodoListType, RemoveTodoListType, SetTodoListType} from "./todolist-reducer";
-import {TaskPriority, TaskStatus, TaskType, todoListAPI, UpdateTaskType} from "../api/todolist-api";
-import {TasksType} from "../TodoList/TodoList";
+import {TaskPriority, TaskStatus, TaskType, todoListAPI, UpdateTaskType} from "../../api/todolist-api";
+import {TasksType} from "../../TodoList/TodoList";
 import {Dispatch} from "redux";
-import {RootReducerType} from "../Redux/store";
-
-type ActionType = AddTaskType
-    | DeleteTaskType
-    | ChangeTitleTaskType
-    | UpdateTaskActionType
-    | AddTodoListType
-    | RemoveTodoListType
-    | SetTodoListType
-    | SetTasksActionType
-
-type AddTaskType = {
-    type: 'ADD-TASK'
-    task: TaskType
-}
-type DeleteTaskType = {
-    type: 'DELETE-TASK'
-    todoListId: string
-    taskId: string
-}
-type ChangeTitleTaskType = {
-    type: 'CHANGE-TASK-TITLE'
-    todoListId: string
-    taskId: string
-    title: string
-}
-type UpdateTaskActionType = {
-    type: 'UPDATE-TASK'
-    todoListId: string
-    taskId: string
-    model: UpdateDomainTaskType
-}
-type SetTasksActionType = {
-    type: 'SET-TASKS'
-    tasks: Array<TaskType>
-    todoListId: string
-}
-export type UpdateDomainTaskType = {
-    title?: string
-    description?: string
-    status?: TaskStatus
-    priority?: TaskPriority
-    startDate?: string
-    deadline?: string
-}
+import {RootReducerType} from "../store";
+import {setErrorMessageAC, SetErrorMessageType, setStatusAC, SetStatusType} from "./app-reducer";
 
 const initState: TasksType = {}
 
@@ -103,35 +60,48 @@ export const taskReducer = (state: TasksType = initState, action: ActionType): T
 }
 
 // Action Creator
-export const addTaskAC = (task: TaskType): AddTaskType => ({type: 'ADD-TASK', task})
-export const deleteTaskAC = (todoListId: string, taskId: string): DeleteTaskType => {
-    return {type: 'DELETE-TASK', todoListId, taskId}
-}
-export const changeTaskTitleAC = (todoListId: string, taskId: string, title: string): ChangeTitleTaskType => {
-    return {type: 'CHANGE-TASK-TITLE', todoListId, taskId, title}
-}
-export const updateTaskAC = (todoListId: string, taskId: string, model: UpdateDomainTaskType): UpdateTaskActionType => {
-    return {type: "UPDATE-TASK", todoListId, taskId, model}
-}
-export const setTasks = (todoListId: string, tasks: Array<TaskType>): SetTasksActionType => {
-    return {type: "SET-TASKS", todoListId, tasks}
-}
+export const addTaskAC = (task: TaskType) => ({type: 'ADD-TASK', task} as const)
+export const deleteTaskAC = (todoListId: string, taskId: string) => ({type: 'DELETE-TASK', todoListId, taskId} as const)
+export const changeTaskTitleAC = (todoListId: string, taskId: string, title: string) => (
+    {type: 'CHANGE-TASK-TITLE', todoListId, taskId, title} as const)
+export const updateTaskAC = (todoListId: string, taskId: string, model: UpdateDomainTaskType) => (
+    {type: "UPDATE-TASK", todoListId, taskId, model} as const)
+export const setTasks = (todoListId: string, tasks: Array<TaskType>) => (
+    {type: "SET-TASKS", todoListId, tasks} as const)
 
 // Thunk Creator
-export const fetchTasksTC = (todoListId: string) => (dispatch: Dispatch) => {
+export const fetchTasksTC = (todoListId: string) => (dispatch: ThunkDispatchType) => {
+    dispatch(setStatusAC('loading'))
     todoListAPI.getTasks(todoListId)
-        .then(res => dispatch(setTasks(todoListId, res.data.items)))
+        .then(res => {
+            dispatch(setTasks(todoListId, res.data.items))
+            dispatch(setStatusAC('succeeded'))
+        })
 }
-export const addTaskTC = (todosId: string, title: string) => (dispatch: Dispatch) => {
+export const addTaskTC = (todosId: string, title: string) => (dispatch: ThunkDispatchType) => {
+    dispatch(setStatusAC('loading'))
     todoListAPI.createTask(todosId, title)
-        .then(res => dispatch(addTaskAC(res.data.data.item)))
+        .then(res => {
+            if (res.data.resultCode === 0) {
+                dispatch(addTaskAC(res.data.data.item))
+                dispatch(setStatusAC('succeeded'))
+            } else {
+                if (res.data.messages.length) {
+                    dispatch(setErrorMessageAC(res.data.messages[0]))
+                } else {
+                    // If message error is not got from server
+                    dispatch(setErrorMessageAC('Some error occurred'))
+                }
+                dispatch(setStatusAC('failed'))
+            }
+        })
 }
-export const deleteTaskTC = (todoId: string, taskId: string) => (dispatch: Dispatch) => {
+export const deleteTaskTC = (todoId: string, taskId: string) => (dispatch: ThunkDispatchType) => {
     todoListAPI.deleteTask(todoId, taskId)
         .then(res => dispatch(deleteTaskAC(todoId, taskId)))
 }
 export const updateTaskTC = (todoId: string, taskId: string, domainModel: UpdateDomainTaskType) =>
-    (dispatch: Dispatch, getState: () => RootReducerType) => {
+    (dispatch: ThunkDispatchType, getState: () => RootReducerType) => {
 
         const state = getState()
         const task = state.tasks[todoId].find(t => t.id === taskId)
@@ -155,3 +125,30 @@ export const updateTaskTC = (todoId: string, taskId: string, domainModel: Update
         todoListAPI.updateTask(todoId, taskId, apiModel)
             .then(res => dispatch(updateTaskAC(todoId, taskId, domainModel)))
     }
+
+// Types
+type ActionType = AddTaskType
+    | DeleteTaskType
+    | ChangeTaskTitleType
+    | UpdateTaskActionType
+    | AddTodoListType
+    | RemoveTodoListType
+    | SetTodoListType
+    | SetTasksActionType
+
+type AddTaskType = ReturnType<typeof addTaskAC>
+type DeleteTaskType = ReturnType<typeof deleteTaskAC>
+type ChangeTaskTitleType = ReturnType<typeof changeTaskTitleAC>
+type UpdateTaskActionType = ReturnType<typeof updateTaskAC>
+type SetTasksActionType = ReturnType<typeof setTasks>
+
+type ThunkDispatchType = Dispatch<ActionType | SetStatusType | SetErrorMessageType>
+
+export type UpdateDomainTaskType = {
+    title?: string
+    description?: string
+    status?: TaskStatus
+    priority?: TaskPriority
+    startDate?: string
+    deadline?: string
+}
