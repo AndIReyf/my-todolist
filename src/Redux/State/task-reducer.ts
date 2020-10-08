@@ -77,6 +77,10 @@ export const fetchTasksTC = (todoListId: string) => (dispatch: ThunkDispatchType
             dispatch(setTasks(todoListId, res.data.items))
             dispatch(setAppStatusAC('succeeded'))
         })
+        .catch(error => {
+            dispatch(setAppErrorMessageAC(error.message))
+            dispatch(setAppStatusAC('failed'))
+        })
 }
 export const addTaskTC = (todosId: string, title: string) => (dispatch: ThunkDispatchType) => {
     dispatch(setAppStatusAC('loading'))
@@ -89,16 +93,28 @@ export const addTaskTC = (todosId: string, title: string) => (dispatch: ThunkDis
                 if (res.data.messages.length) {
                     dispatch(setAppErrorMessageAC(res.data.messages[0]))
                 } else {
-                    // If message error is not got from server
+                    // If the message error will not come from server
                     dispatch(setAppErrorMessageAC('Some error occurred'))
                 }
                 dispatch(setAppStatusAC('failed'))
             }
         })
+        .catch(error => {
+            dispatch(setAppErrorMessageAC(error.message))
+            dispatch(setAppStatusAC('failed'))
+        })
 }
 export const deleteTaskTC = (todoId: string, taskId: string) => (dispatch: ThunkDispatchType) => {
+    dispatch(setAppStatusAC('loading'))
     todoListAPI.deleteTask(todoId, taskId)
-        .then(res => dispatch(deleteTaskAC(todoId, taskId)))
+        .then(res => {
+            dispatch(deleteTaskAC(todoId, taskId))
+            dispatch(setAppStatusAC('succeeded'))
+        })
+        .catch(error => {
+            dispatch(setAppErrorMessageAC(error.message))
+            dispatch(setAppStatusAC('failed'))
+        })
 }
 export const updateTaskTC = (todoId: string, taskId: string, domainModel: UpdateDomainTaskType) =>
     (dispatch: ThunkDispatchType, getState: () => RootReducerType) => {
@@ -121,9 +137,26 @@ export const updateTaskTC = (todoId: string, taskId: string, domainModel: Update
             title: task.title,
             ...domainModel
         }
-
+        dispatch(setAppStatusAC('loading'))
         todoListAPI.updateTask(todoId, taskId, apiModel)
-            .then(res => dispatch(updateTaskAC(todoId, taskId, domainModel)))
+            .then(res => {
+                if (res.data.resultCode === 0) {
+                    dispatch(updateTaskAC(todoId, taskId, domainModel))
+                    dispatch(setAppStatusAC('succeeded'))
+                } else {
+                    if (res.data.messages.length) {
+                        dispatch(setAppErrorMessageAC(res.data.messages[0]))
+                    } else {
+                        // If the message error will not come from server
+                        dispatch(setAppErrorMessageAC('Some error occurred'))
+                    }
+                    dispatch(setAppStatusAC('failed'))
+                }
+            })
+            .catch(error => {
+                dispatch(setAppErrorMessageAC(error.message))
+                dispatch(setAppStatusAC('failed'))
+            })
     }
 
 // Types
