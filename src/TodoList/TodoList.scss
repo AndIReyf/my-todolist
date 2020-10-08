@@ -2,6 +2,11 @@
   padding: 12px;
   border-radius: 5px;
 
+  &.disable{
+    pointer-events: none;
+    opacity: 0.4;
+  }
+
   .todoListTitle {
     display: flex;
     justify-content: space-between;

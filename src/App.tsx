@@ -60,13 +60,11 @@ export function App() {
                 </Grid>
                 <Grid container spacing={2}>
                     {
-                        todoLists.map(td => {
-                            return <Grid item key={td.id}>
+                        todoLists.map(tl => {
+                            return <Grid item key={tl.id}>
                                 <Paper elevation={3}>
                                     <TodoList
-                                        id={td.id}
-                                        title={td.title}
-                                        filter={td.filter}
+                                        todoList={tl}
                                         todoFilter={todoFilter}
                                         deleteItem={deleteTodoList}
                                         changeTodoListTitle={setNewTodoTitle}/>

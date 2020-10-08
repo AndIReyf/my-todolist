@@ -3,7 +3,7 @@ import {TaskPriority, TaskStatus, TaskType, todoListAPI, UpdateTaskType} from ".
 import {TasksType} from "../../TodoList/TodoList";
 import {Dispatch} from "redux";
 import {RootReducerType} from "../store";
-import {setErrorMessageAC, SetErrorMessageType, setStatusAC, SetStatusType} from "./app-reducer";
+import {setAppErrorMessageAC, SetErrorMessageType, setAppStatusAC, SetStatusType} from "./app-reducer";
 
 const initState: TasksType = {}
 
@@ -71,28 +71,28 @@ export const setTasks = (todoListId: string, tasks: Array<TaskType>) => (
 
 // Thunk Creator
 export const fetchTasksTC = (todoListId: string) => (dispatch: ThunkDispatchType) => {
-    dispatch(setStatusAC('loading'))
+    dispatch(setAppStatusAC('loading'))
     todoListAPI.getTasks(todoListId)
         .then(res => {
             dispatch(setTasks(todoListId, res.data.items))
-            dispatch(setStatusAC('succeeded'))
+            dispatch(setAppStatusAC('succeeded'))
         })
 }
 export const addTaskTC = (todosId: string, title: string) => (dispatch: ThunkDispatchType) => {
-    dispatch(setStatusAC('loading'))
+    dispatch(setAppStatusAC('loading'))
     todoListAPI.createTask(todosId, title)
         .then(res => {
             if (res.data.resultCode === 0) {
                 dispatch(addTaskAC(res.data.data.item))
-                dispatch(setStatusAC('succeeded'))
+                dispatch(setAppStatusAC('succeeded'))
             } else {
                 if (res.data.messages.length) {
-                    dispatch(setErrorMessageAC(res.data.messages[0]))
+                    dispatch(setAppErrorMessageAC(res.data.messages[0]))
                 } else {
                     // If message error is not got from server
-                    dispatch(setErrorMessageAC('Some error occurred'))
+                    dispatch(setAppErrorMessageAC('Some error occurred'))
                 }
-                dispatch(setStatusAC('failed'))
+                dispatch(setAppStatusAC('failed'))
             }
         })
 }

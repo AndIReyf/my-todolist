@@ -1,4 +1,4 @@
-import {appReducer, InitialStateType, setErrorMessageAC, setStatusAC} from "./app-reducer";
+import {appReducer, InitialStateType, setAppErrorMessageAC, setAppStatusAC} from "../Redux/State/app-reducer";
 
 let state: InitialStateType;
 
@@ -10,13 +10,13 @@ beforeEach(() => {
 })
 
 test('Error message should appear', () => {
-    const action = setErrorMessageAC('Error occurred')
+    const action = setAppErrorMessageAC('Error occurred')
     const newState = appReducer(state, action)
 
     expect(newState.error).toBe('Error occurred')
 })
 test('Correct status should be set', () => {
-    const action = setStatusAC('loading')
+    const action = setAppStatusAC('loading')
     const newState = appReducer(state, action)
 
     expect(newState.status).toBe('loading')

@@ -1,6 +1,6 @@
-import {TasksType} from "../../TodoList/TodoList";
-import {addTodoListAC, setTodoListAC, TodoListDomainType, todolistReducer} from "./todolist-reducer";
-import {taskReducer} from "./task-reducer";
+import {TasksType} from "../TodoList/TodoList";
+import {addTodoListAC, setTodoListAC, TodoListDomainType, todolistReducer} from "../Redux/State/todolist-reducer";
+import {taskReducer} from "../Redux/State/task-reducer";
 
 test('Should be equal', () => {
     const startTasksState: TasksType = {}
