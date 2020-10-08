@@ -3,7 +3,8 @@ import {TaskPriority, TaskStatus, TaskType, todoListAPI, UpdateTaskType} from ".
 import {TasksType} from "../../TodoList/TodoList";
 import {Dispatch} from "redux";
 import {RootReducerType} from "../store";
-import {setAppErrorMessageAC, SetErrorMessageType, setAppStatusAC, SetStatusType} from "./app-reducer";
+import {SetErrorMessageType, setAppStatusAC, SetStatusType} from "./app-reducer";
+import {handleServerAppError, handleServerNetworkError} from "../../utils/handle-error";
 
 const initState: TasksType = {}
 
@@ -11,28 +12,30 @@ const initState: TasksType = {}
 export const taskReducer = (state: TasksType = initState, action: ActionType): TasksType => {
     switch (action.type) {
         case "ADD-TASK": {
-            const stateCopy = {...state}
-            const newTask = action.task
-            const tasks = stateCopy[newTask.todoListId]
-            stateCopy[newTask.todoListId] = [newTask, ...tasks]
-            return stateCopy
+            return {
+                ...state,
+                [action.task.todoListId]: [action.task, ...state[action.task.todoListId]]
+            }
         }
         case "DELETE-TASK": {
-            const stateCopy = {...state}
-            stateCopy[action.todoListId] = state[action.todoListId].filter(t => t.id !== action.taskId)
-            return stateCopy
+            return {
+                ...state,
+                [action.todoListId]: [...state[action.todoListId].filter(t => t.id !== action.taskId)]
+            }
         }
         case "CHANGE-TASK-TITLE": {
-            const stateCopy = {...state}
-            stateCopy[action.todoListId] = stateCopy[action.todoListId]
-                .map(t => t.id === action.taskId ? {...t, title: action.title.trim()} : t)
-            return stateCopy
+            return {
+                ...state,
+                [action.todoListId]: state[action.todoListId]
+                    .map(t => t.id === action.taskId ? {...t, title: action.title.trim()} : t)
+            }
         }
         case "UPDATE-TASK": {
-            const stateCopy = {...state}
-            stateCopy[action.todoListId] = stateCopy[action.todoListId]
-                .map(t => t.id === action.taskId ? {...t, ...action.model} : t)
-            return stateCopy
+            return {
+                ...state,
+                [action.todoListId]: state[action.todoListId]
+                    .map(t => t.id === action.taskId ? {...t, ...action.model} : t)
+            }
         }
         case "ADD-TODOLIST": {
             return {...state, [action.todoList.id]: []}
@@ -50,9 +53,7 @@ export const taskReducer = (state: TasksType = initState, action: ActionType): T
             return stateCopy
         }
         case "SET-TASKS": {
-            const stateCopy = {...state}
-            stateCopy[action.todoListId] = action.tasks
-            return stateCopy
+            return {...state, [action.todoListId]: action.tasks}
         }
         default:
             return state
@@ -77,10 +78,7 @@ export const fetchTasksTC = (todoListId: string) => (dispatch: ThunkDispatchType
             dispatch(setTasks(todoListId, res.data.items))
             dispatch(setAppStatusAC('succeeded'))
         })
-        .catch(error => {
-            dispatch(setAppErrorMessageAC(error.message))
-            dispatch(setAppStatusAC('failed'))
-        })
+        .catch(error => handleServerNetworkError(error, dispatch))
 }
 export const addTaskTC = (todosId: string, title: string) => (dispatch: ThunkDispatchType) => {
     dispatch(setAppStatusAC('loading'))
@@ -90,19 +88,10 @@ export const addTaskTC = (todosId: string, title: string) => (dispatch: ThunkDis
                 dispatch(addTaskAC(res.data.data.item))
                 dispatch(setAppStatusAC('succeeded'))
             } else {
-                if (res.data.messages.length) {
-                    dispatch(setAppErrorMessageAC(res.data.messages[0]))
-                } else {
-                    // If the message error will not come from server
-                    dispatch(setAppErrorMessageAC('Some error occurred'))
-                }
-                dispatch(setAppStatusAC('failed'))
+                handleServerAppError(res.data, dispatch)
             }
         })
-        .catch(error => {
-            dispatch(setAppErrorMessageAC(error.message))
-            dispatch(setAppStatusAC('failed'))
-        })
+        .catch(error => handleServerNetworkError(error, dispatch))
 }
 export const deleteTaskTC = (todoId: string, taskId: string) => (dispatch: ThunkDispatchType) => {
     dispatch(setAppStatusAC('loading'))
@@ -111,10 +100,7 @@ export const deleteTaskTC = (todoId: string, taskId: string) => (dispatch: Thunk
             dispatch(deleteTaskAC(todoId, taskId))
             dispatch(setAppStatusAC('succeeded'))
         })
-        .catch(error => {
-            dispatch(setAppErrorMessageAC(error.message))
-            dispatch(setAppStatusAC('failed'))
-        })
+        .catch(error => handleServerNetworkError(error, dispatch))
 }
 export const updateTaskTC = (todoId: string, taskId: string, domainModel: UpdateDomainTaskType) =>
     (dispatch: ThunkDispatchType, getState: () => RootReducerType) => {
@@ -144,19 +130,10 @@ export const updateTaskTC = (todoId: string, taskId: string, domainModel: Update
                     dispatch(updateTaskAC(todoId, taskId, domainModel))
                     dispatch(setAppStatusAC('succeeded'))
                 } else {
-                    if (res.data.messages.length) {
-                        dispatch(setAppErrorMessageAC(res.data.messages[0]))
-                    } else {
-                        // If the message error will not come from server
-                        dispatch(setAppErrorMessageAC('Some error occurred'))
-                    }
-                    dispatch(setAppStatusAC('failed'))
+                    handleServerAppError(res.data, dispatch)
                 }
             })
-            .catch(error => {
-                dispatch(setAppErrorMessageAC(error.message))
-                dispatch(setAppStatusAC('failed'))
-            })
+            .catch(error => handleServerNetworkError(error, dispatch))
     }
 
 // Types

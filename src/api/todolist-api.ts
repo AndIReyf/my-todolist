@@ -1,65 +1,5 @@
 import axios from 'axios'
 
-export type TodoListType = {
-    id: string
-    addedDate: string
-    order: number
-    title: string
-}
-
-type CreateTodoListDataType = {
-    item: TodoListType
-}
-
-type ResponseType<T = {}> = {
-    resultCode: number
-    messages: Array<string>
-    data: T
-}
-
-export enum TaskStatus {
-    New,
-    InProgress,
-    Completed,
-    Draft
-}
-
-export enum TaskPriority {
-    Low,
-    Middle,
-    Hi,
-    Urgently,
-    Later
-}
-
-export type TaskType = {
-    description: string
-    title: string
-    status: TaskStatus
-    priority: TaskPriority
-    startDate: string
-    deadline: string
-    id: string
-    todoListId: string
-    order: number
-    addedDate: string
-}
-
-export type UpdateTaskType = {
-    title: string
-    description: string
-    status: TaskStatus
-    priority: TaskPriority
-    startDate: string
-    deadline: string
-}
-
-type TasksPropertyType = {
-    items: Array<TaskType>
-    totalCount: number
-    error: string | null
-}
-
 const instance = axios.create({
     baseURL: 'https://social-network.samuraijs.com/api/1.1/',
     withCredentials: true,
@@ -93,4 +33,65 @@ export const todoListAPI = {
     updateTask(todolistId: string, taskId: string, partToUpdate: UpdateTaskType) {
         return instance.put<ResponseType>(`todo-lists/${todolistId}/tasks/${taskId}`, partToUpdate)
     }
+}
+
+// Types
+export type TodoListType = {
+    id: string
+    addedDate: string
+    order: number
+    title: string
+}
+
+type CreateTodoListDataType = {
+    item: TodoListType
+}
+
+export type ResponseType<T = {}> = {
+    resultCode: number
+    messages: Array<string>
+    data: T
+}
+
+export type TaskType = {
+    description: string
+    title: string
+    status: TaskStatus
+    priority: TaskPriority
+    startDate: string
+    deadline: string
+    id: string
+    todoListId: string
+    order: number
+    addedDate: string
+}
+
+export type UpdateTaskType = {
+    title: string
+    description: string
+    status: TaskStatus
+    priority: TaskPriority
+    startDate: string
+    deadline: string
+}
+
+type TasksPropertyType = {
+    items: Array<TaskType>
+    totalCount: number
+    error: string | null
+}
+
+export enum TaskStatus {
+    New,
+    InProgress,
+    Completed,
+    Draft
+}
+
+export enum TaskPriority {
+    Low,
+    Middle,
+    Hi,
+    Urgently,
+    Later
 }

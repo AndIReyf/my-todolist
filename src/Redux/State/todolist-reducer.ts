@@ -1,6 +1,7 @@
 import {todoListAPI, TodoListType} from "../../api/todolist-api";
 import {Dispatch} from "redux";
 import {setAppErrorMessageAC, setAppStatusAC, SetErrorMessageType, SetStatusType, StatusType} from "./app-reducer";
+import {handleServerNetworkError} from "../../utils/handle-error";
 
 const initState: Array<TodoListDomainType> = []
 
@@ -58,6 +59,7 @@ export const fetchTodoListsTC = () => (dispatch: ThunkDispatchType) => {
             dispatch(setTodoListAC(res.data))
             dispatch(setAppStatusAC('succeeded'))
         })
+        .catch(error => handleServerNetworkError(error, dispatch))
 }
 export const createNewTodoListTC = (title: string) => (dispatch: ThunkDispatchType) => {
     dispatch(setAppStatusAC('loading'))
@@ -66,10 +68,7 @@ export const createNewTodoListTC = (title: string) => (dispatch: ThunkDispatchTy
             dispatch(addTodoListAC(res.data.data.item))
             dispatch(setAppStatusAC('succeeded'))
         })
-        .catch(error => {
-            dispatch(setAppErrorMessageAC('Something got wrong :('))
-            dispatch(setAppStatusAC('failed'))
-        })
+        .catch(error => handleServerNetworkError(error, dispatch))
 }
 export const deleteTodoListTC = (id: string) => (dispatch: ThunkDispatchType) => {
     dispatch(setAppStatusAC('loading'))
@@ -79,19 +78,16 @@ export const deleteTodoListTC = (id: string) => (dispatch: ThunkDispatchType) =>
             dispatch(removeTodoListAC(id))
             dispatch(setAppStatusAC('succeeded'))
         })
-        .catch(error => {
-            dispatch(setAppErrorMessageAC(error.message))
-            dispatch(setAppStatusAC('failed'))
-            dispatch(changeTodoListEntityStatusAC(id, 'failed'))
-        })
+        .catch(error => handleServerNetworkError(error, dispatch))
 }
 export const updateTodoListTitleTC = (id: string, title: string) => (dispatch: ThunkDispatchType) => {
+    dispatch(setAppStatusAC('loading'))
     todoListAPI.updateTodoListTitle(id, title)
-        .then(res => dispatch(changeTitleTodoListAC(title, id)))
-        .catch(error => {
-            dispatch(setAppErrorMessageAC(error.message))
-            dispatch(setAppStatusAC('failed'))
+        .then(res => {
+            dispatch(changeTitleTodoListAC(title, id))
+            dispatch(setAppStatusAC('succeeded'))
         })
+        .catch(error => handleServerNetworkError(error, dispatch))
 }
 
 // Types
