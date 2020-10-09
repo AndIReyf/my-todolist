@@ -1,4 +1,4 @@
-import {TasksType} from "../TodoList/TodoList";
+import {TasksType} from "../components/TodoList/TodoList";
 import {v1} from "uuid";
 import {
     addTaskAC,

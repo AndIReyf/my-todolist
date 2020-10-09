@@ -1,77 +1,43 @@
 import React from 'react';
 import './App.css';
-import { TodoList} from "./TodoList/TodoList";
-import {AddItemForm} from "./TodoList/AddItemForm/AddItemForm";
-import {Container, Grid, Paper} from "@material-ui/core";
-import {Header} from "./Header/Header";
+import {CircularProgress, Container, Grid} from "@material-ui/core";
+import {Header} from "./components/Header/Header";
 import {useDispatch, useSelector} from "react-redux";
-import {
-    changeFilterTodoListAC,createNewTodoListTC, deleteTodoListTC, fetchTodoListsTC,
-    FilterType,
-    TodoListDomainType, updateTodoListTitleTC
-} from "./Redux/State/todolist-reducer";
 import {RootReducerType} from "./Redux/store";
-import {Preloader} from "./TodoList/Preloader/Preloader";
-import {MySnackbar} from "./TodoList/Snackbar/Snackbar";
-import {StatusType} from "./Redux/State/app-reducer";
+import {Preloader} from "./components/Preloader/Preloader";
+import {MySnackbar} from "./components/Snackbar/Snackbar";
+import {initializedAppTC, StatusType} from "./Redux/State/app-reducer";
+import {TodoLists} from "./components/TodoLists/TodoLists";
+import {Route} from 'react-router-dom';
+import {Login} from "./components/Login/Login";
 
 export function App() {
 
-    const todoListErrorText: string = 'Title is required. Enter the title!'
-    const todoListTitle: string = 'Create List'
-
     const dispatch = useDispatch()
-    const todoLists = useSelector<RootReducerType, Array<TodoListDomainType>>(state => state.todoLists)
     const status = useSelector<RootReducerType, StatusType>(state => state.app.status)
+    const isInitialized = useSelector<RootReducerType, boolean>(state => state.app.initialized)
 
     React.useEffect(() => {
-        dispatch(fetchTodoListsTC())
+        dispatch(initializedAppTC())
     }, [])
 
-    const todoFilter = React.useCallback((filter: FilterType, todoListId: string) => {
-        dispatch(changeFilterTodoListAC(filter, todoListId))
-    }, [dispatch])
-
-    const addTodoList = React.useCallback((title: string) => {
-        dispatch(createNewTodoListTC(title))
-    }, [dispatch])
-
-    const deleteTodoList = React.useCallback((todoListId: string) => {
-        dispatch(deleteTodoListTC(todoListId))
-    }, [dispatch])
-
-    const setNewTodoTitle = React.useCallback((title: string, id: string) => {
-        dispatch(updateTodoListTitleTC(id, title))
-    }, [dispatch])
+    if (!isInitialized) {
+        return (
+            <div style={{position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)'}}>
+                <CircularProgress/>
+            </div>
+        )
+    }
 
     return (
         <div className="App">
             <Header/>
-            {
-                status === 'loading' && <Preloader/>
-            }
+            {status === 'loading' && <Preloader/>}
             <MySnackbar/>
             <Container maxWidth={"lg"}>
-                <Grid container>
-                    <AddItemForm
-                        errorText={todoListErrorText}
-                        title={todoListTitle}
-                        addItem={addTodoList}/>
-                </Grid>
                 <Grid container spacing={2}>
-                    {
-                        todoLists.map(tl => {
-                            return <Grid item key={tl.id}>
-                                <Paper elevation={3}>
-                                    <TodoList
-                                        todoList={tl}
-                                        todoFilter={todoFilter}
-                                        deleteItem={deleteTodoList}
-                                        changeTodoListTitle={setNewTodoTitle}/>
-                                </Paper>
-                            </Grid>
-                        })
-                    }
+                    <Route path={'/login'} render={() => <Login/>}/>
+                    <Route exact path={'/'} render={() => <TodoLists/>}/>
                 </Grid>
             </Container>
         </div>

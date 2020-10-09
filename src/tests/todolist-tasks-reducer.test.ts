@@ -1,4 +1,4 @@
-import {TasksType} from "../TodoList/TodoList";
+import {TasksType} from "../components/TodoList/TodoList";
 import {addTodoListAC, setTodoListAC, TodoListDomainType, todolistReducer} from "../Redux/State/todolist-reducer";
 import {taskReducer} from "../Redux/State/task-reducer";
 

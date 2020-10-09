@@ -1,16 +1,16 @@
 import React from "react";
 import './TodoList.scss';
-import {AddItemForm} from "./AddItemForm/AddItemForm";
-import {MyButton} from "./Button/MyButton";
-import {EditableTitle} from "./EditableTitle/EditableTitle";
+import {AddItemForm} from "../AddItemForm/AddItemForm";
+import {MyButton} from "../Button/MyButton";
+import {EditableTitle} from "../EditableTitle/EditableTitle";
 import {IconButton} from "@material-ui/core";
 import DeleteIcon from '@material-ui/icons/Delete';
 import {useDispatch, useSelector} from "react-redux";
-import {RootReducerType} from "../Redux/store";
-import {addTaskTC, deleteTaskTC, fetchTasksTC} from "../Redux/State/task-reducer";
-import {Task} from "./Task/Task";
-import {TaskStatus, TaskType} from "../api/todolist-api";
-import {FilterType, TodoListDomainType} from "../Redux/State/todolist-reducer";
+import {RootReducerType} from "../../Redux/store";
+import {addTaskTC, deleteTaskTC, fetchTasksTC} from "../../Redux/State/task-reducer";
+import {Task} from "../Task/Task";
+import {TaskStatus, TaskType} from "../../api/todolist-api";
+import {FilterType, TodoListDomainType} from "../../Redux/State/todolist-reducer";
 
 export type TasksType = {
     [key: string]: Array<TaskType>

@@ -1,6 +1,6 @@
 import {AddTodoListType, RemoveTodoListType, SetTodoListType} from "./todolist-reducer";
 import {TaskPriority, TaskStatus, TaskType, todoListAPI, UpdateTaskType} from "../../api/todolist-api";
-import {TasksType} from "../../TodoList/TodoList";
+import {TasksType} from "../../components/TodoList/TodoList";
 import {Dispatch} from "redux";
 import {RootReducerType} from "../store";
 import {SetErrorMessageType, setAppStatusAC, SetStatusType} from "./app-reducer";
@@ -96,7 +96,7 @@ export const addTaskTC = (todosId: string, title: string) => (dispatch: ThunkDis
 export const deleteTaskTC = (todoId: string, taskId: string) => (dispatch: ThunkDispatchType) => {
     dispatch(setAppStatusAC('loading'))
     todoListAPI.deleteTask(todoId, taskId)
-        .then(res => {
+        .then(() => {
             dispatch(deleteTaskAC(todoId, taskId))
             dispatch(setAppStatusAC('succeeded'))
         })
