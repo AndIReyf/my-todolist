@@ -2,32 +2,31 @@ import {Dispatch} from "redux";
 import {setAppStatusAC, SetErrorMessageType, SetStatusType} from "./app-reducer";
 import {authAPI, LoginParamsType} from "../../api/todolist-api";
 import {handleServerAppError, handleServerNetworkError} from "../../utils/handle-error";
+import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 
-const initState: InitialStateType = {
-    isSignIn: false
-}
+const initState = {isSignIn: false}
 
 // Reducer
-export const loginReducer = (state: InitialStateType = initState, action: ActionType): InitialStateType => {
-    switch (action.type){
-        case "login/IS-SIGN-IN": {
-            return {...state, isSignIn: action.isSignIn}
+const slice = createSlice({
+    name: 'auth',
+    initialState: initState,
+    reducers: {
+        setSignInAC(state, action: PayloadAction<{isSignIn: boolean}>) {
+           state.isSignIn = action.payload.isSignIn
         }
-        default:
-            return state
     }
-}
+})
 
-// Action Creator
-export const setSignInAC = (isSignIn: boolean) => ({type: 'login/IS-SIGN-IN', isSignIn} as const)
+export const loginReducer = slice.reducer
+export const {setSignInAC} = slice.actions
 
 // Thunk Creator
-export const loginTC = (data: LoginParamsType) => (dispatch: ThunkDispatchType) => {
+export const loginTC = (data: LoginParamsType) => (dispatch: Dispatch) => {
     dispatch(setAppStatusAC('loading'))
     authAPI.login(data)
         .then(res => {
             if (res.data.resultCode === 0) {
-                dispatch(setSignInAC(true))
+                dispatch(setSignInAC({isSignIn: true}))
                 dispatch(setAppStatusAC('succeeded'))
             } else {
                 handleServerAppError(res.data, dispatch)
@@ -35,12 +34,12 @@ export const loginTC = (data: LoginParamsType) => (dispatch: ThunkDispatchType) 
         })
         .catch(error => handleServerNetworkError(error, dispatch))
 }
-export const logoutTC = () => (dispatch: ThunkDispatchType) => {
+export const logoutTC = () => (dispatch: Dispatch) => {
     dispatch(setAppStatusAC('loading'))
     authAPI.logout()
         .then(res => {
             if (res.data.resultCode === 0) {
-                dispatch(setSignInAC(false))
+                dispatch(setSignInAC({isSignIn: false}))
                 dispatch(setAppStatusAC('succeeded'))
             } else {
                 handleServerAppError(res.data, dispatch)
@@ -48,13 +47,3 @@ export const logoutTC = () => (dispatch: ThunkDispatchType) => {
         })
         .catch(error => handleServerNetworkError(error, dispatch))
 }
-
-// Types
-type InitialStateType = {
-    isSignIn: boolean
-}
-
-type ActionType = SignInType
-type SignInType = ReturnType<typeof setSignInAC>
-
-type ThunkDispatchType = Dispatch<SetStatusType | SetErrorMessageType | ActionType>

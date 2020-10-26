@@ -36,9 +36,7 @@ export function Login() {
     })
 
     // If it has already been signed in, redirect to home page
-    if (isSignIn) {
-        return <Redirect to={'/'}/>
-    }
+    if (isSignIn) return <Redirect to={'/'}/>
 
     return (
         <Grid container justify={'center'}>

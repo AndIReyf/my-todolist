@@ -35,7 +35,7 @@ export const initializedAppTC = () => (dispatch: Dispatch) => {
     authAPI.me()
         .then(res => {
             if (res.data.resultCode === 0) {
-                dispatch(setSignInAC(true))
+                dispatch(setSignInAC({isSignIn: true}))
             }
             dispatch(setAppInitializedAC(true))
         })
