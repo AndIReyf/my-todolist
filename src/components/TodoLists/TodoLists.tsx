@@ -37,7 +37,7 @@ export function TodoLists() {
     }, [dispatch])
 
     const todoFilter = React.useCallback((filter: FilterType, todoListId: string) => {
-        dispatch(changeFilterTodoListAC(filter, todoListId))
+        dispatch(changeFilterTodoListAC({filter, id: todoListId}))
     }, [dispatch])
 
     const addTodoList = React.useCallback((title: string) => {

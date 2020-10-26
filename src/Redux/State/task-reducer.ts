@@ -1,4 +1,4 @@
-import {AddTodoListType, RemoveTodoListType, SetTodoListType} from "./todolist-reducer";
+import {addTodoListAC, removeTodoListAC, setTodoListAC} from "./todolist-reducer";
 import {TaskPriority, TaskStatus, TaskType, todoListAPI, UpdateTaskType} from "../../api/todolist-api";
 import {TasksType} from "../../components/TodoList/TodoList";
 import {Dispatch} from "redux";
@@ -9,7 +9,7 @@ import {handleServerAppError, handleServerNetworkError} from "../../utils/handle
 const initState: TasksType = {}
 
 // Reducer
-export const taskReducer = (state: TasksType = initState, action: ActionType): TasksType => {
+export const taskReducer = (state: TasksType = initState, action: any): TasksType => {
     switch (action.type) {
         case "ADD-TASK": {
             return {
@@ -37,19 +37,17 @@ export const taskReducer = (state: TasksType = initState, action: ActionType): T
                     .map(t => t.id === action.taskId ? {...t, ...action.model} : t)
             }
         }
-        case "ADD-TODOLIST": {
-            return {...state, [action.todoList.id]: []}
+        case addTodoListAC.type: {
+            return {...state, [action.payload.todoList.id]: []}
         }
-        case "REMOVE-TODOLIST": {
+        case removeTodoListAC.type: {
             const stateCopy = {...state}
-            delete stateCopy[action.id]
+            delete stateCopy[action.payload.id]
             return stateCopy
         }
-        case "SET-TODOLIST": {
+        case setTodoListAC.type: {
             const stateCopy = {...state}
-            action.todoLists.forEach(tl => {
-                stateCopy[tl.id] = []
-            })
+            action.payload.todoLists.forEach((tl: any)  => stateCopy[tl.id] = [])
             return stateCopy
         }
         case "SET-TASKS": {
@@ -141,9 +139,6 @@ type ActionType = AddTaskType
     | DeleteTaskType
     | ChangeTaskTitleType
     | UpdateTaskActionType
-    | AddTodoListType
-    | RemoveTodoListType
-    | SetTodoListType
     | SetTasksActionType
 
 type AddTaskType = ReturnType<typeof addTaskAC>
