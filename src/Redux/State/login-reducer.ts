@@ -1,5 +1,5 @@
 import {Dispatch} from "redux";
-import {setAppStatusAC, SetErrorMessageType, SetStatusType} from "./app-reducer";
+import {setAppStatusAC} from "./app-reducer";
 import {authAPI, LoginParamsType} from "../../api/todolist-api";
 import {handleServerAppError, handleServerNetworkError} from "../../utils/handle-error";
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
@@ -22,12 +22,12 @@ export const {setSignInAC} = slice.actions
 
 // Thunk Creator
 export const loginTC = (data: LoginParamsType) => (dispatch: Dispatch) => {
-    dispatch(setAppStatusAC('loading'))
+    dispatch(setAppStatusAC({status: 'loading'}))
     authAPI.login(data)
         .then(res => {
             if (res.data.resultCode === 0) {
                 dispatch(setSignInAC({isSignIn: true}))
-                dispatch(setAppStatusAC('succeeded'))
+                dispatch(setAppStatusAC({status: 'succeeded'}))
             } else {
                 handleServerAppError(res.data, dispatch)
             }
@@ -35,12 +35,12 @@ export const loginTC = (data: LoginParamsType) => (dispatch: Dispatch) => {
         .catch(error => handleServerNetworkError(error, dispatch))
 }
 export const logoutTC = () => (dispatch: Dispatch) => {
-    dispatch(setAppStatusAC('loading'))
+    dispatch(setAppStatusAC({status: 'loading'}))
     authAPI.logout()
         .then(res => {
             if (res.data.resultCode === 0) {
                 dispatch(setSignInAC({isSignIn: false}))
-                dispatch(setAppStatusAC('succeeded'))
+                dispatch(setAppStatusAC({status: 'succeeded'}))
             } else {
                 handleServerAppError(res.data, dispatch)
             }

@@ -1,20 +1,21 @@
-import {setAppErrorMessageAC, setAppStatusAC, SetErrorMessageType, SetStatusType} from "../Redux/State/app-reducer";
+import {setAppErrorMessageAC, setAppStatusAC} from "../Redux/State/app-reducer";
 import {ResponseType} from '../api/todolist-api';
 import {Dispatch} from "redux";
 
-export const handleServerAppError = <T>(data: ResponseType<T>, dispatch: DispatchType) => {
+export const handleServerAppError = <T>(data: ResponseType<T>, dispatch: Dispatch) => {
     if (data.messages.length) {
-        dispatch(setAppErrorMessageAC(data.messages[0]))
+        dispatch(setAppErrorMessageAC({errorMessage: data.messages[0]}))
     } else {
         // If the message error will not come from server
-        dispatch(setAppErrorMessageAC('Some error occurred'))
+        dispatch(setAppErrorMessageAC({errorMessage: 'Some error occurred'}))
     }
-    dispatch(setAppStatusAC('failed'))
+    dispatch(setAppStatusAC({status: 'failed'}))
 }
 
-export const handleServerNetworkError = (error: {message: string}, dispatch: DispatchType) => {
-    dispatch(setAppErrorMessageAC(error.message ? error.message : 'Some error occurred :('))
-    dispatch(setAppStatusAC('failed'))
-}
+export const handleServerNetworkError = (error: {message: string}, dispatch: Dispatch) => {
 
-type DispatchType = Dispatch<SetErrorMessageType | SetStatusType>
+    const errorMessage = error.message ? error.message : 'Some error occurred :('
+
+    dispatch(setAppErrorMessageAC({errorMessage: errorMessage}))
+    dispatch(setAppStatusAC({status: 'failed'}))
+}

@@ -1,6 +1,7 @@
 import {Dispatch} from "redux";
 import {authAPI} from "../../api/todolist-api";
 import {setSignInAC} from "./login-reducer";
+import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 
 const initState: InitialStateType = {
     status: "idle",
@@ -9,26 +10,24 @@ const initState: InitialStateType = {
 }
 
 // Reducer
-export const appReducer = (state: InitialStateType = initState, action: ActionType): InitialStateType => {
-    switch (action.type) {
-        case "APP/SET-ERROR-MESSAGE": {
-            return {...state, error: action.errorMessage}
+const slice = createSlice({
+    name: 'app',
+    initialState: initState,
+    reducers: {
+        setAppErrorMessageAC(state, action: PayloadAction<{errorMessage: string | null}>) {
+            state.error = action.payload.errorMessage
+        },
+        setAppStatusAC(state, action: PayloadAction<{status: StatusType}>) {
+            state.status = action.payload.status
+        },
+        setAppInitializedAC(state, action: PayloadAction<{isInitialized: boolean}>) {
+            state.initialized = action.payload.isInitialized
         }
-        case "APP/SET-STATUS": {
-            return {...state, status: action.status}
-        }
-        case "APP/SET-INITIALIZED-VALUE": {
-            return {...state, initialized: action.isInitialized}
-        }
-        default:
-            return state
     }
-}
+})
 
-// Action Creator
-export const setAppErrorMessageAC = (errorMessage: string | null) => ({type: 'APP/SET-ERROR-MESSAGE', errorMessage} as const)
-export const setAppStatusAC = (status: StatusType) => ({type: 'APP/SET-STATUS', status} as const)
-export const setAppInitializedAC = (isInitialized: boolean) => ({type: 'APP/SET-INITIALIZED-VALUE', isInitialized} as const)
+export const appReducer = slice.reducer
+export const {setAppErrorMessageAC, setAppStatusAC, setAppInitializedAC} = slice.actions
 
 // Thunk Creator
 export const initializedAppTC = () => (dispatch: Dispatch) => {
@@ -37,21 +36,14 @@ export const initializedAppTC = () => (dispatch: Dispatch) => {
             if (res.data.resultCode === 0) {
                 dispatch(setSignInAC({isSignIn: true}))
             }
-            dispatch(setAppInitializedAC(true))
+            dispatch(setAppInitializedAC({isInitialized: true}))
         })
 }
 
 // Types
 export type StatusType = 'idle' | 'loading' | 'succeeded' | 'failed'
-
 export type InitialStateType = {
     status: StatusType
     error: string | null
     initialized: boolean
 }
-type ActionType = SetErrorMessageType
-    | SetStatusType
-    | SetInitializedType
-export type SetErrorMessageType = ReturnType<typeof setAppErrorMessageAC>
-export type SetStatusType = ReturnType<typeof setAppStatusAC>
-export type SetInitializedType = ReturnType<typeof setAppInitializedAC>
