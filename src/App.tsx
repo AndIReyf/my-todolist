@@ -6,7 +6,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {RootReducerType} from "./Redux/store";
 import {Preloader} from "./components/Preloader/Preloader";
 import {MySnackbar} from "./components/Snackbar/Snackbar";
-import {initializedAppTC, StatusType} from "./Redux/State/app-reducer";
+import {initializedApp, StatusType} from "./Redux/State/app-reducer";
 import {TodoLists} from "./components/TodoLists/TodoLists";
 import {Route} from 'react-router-dom';
 import {Login} from "./components/Login/Login";
@@ -18,8 +18,8 @@ export function App() {
     const isInitialized = useSelector<RootReducerType, boolean>(state => state.app.initialized)
 
     React.useEffect(() => {
-        dispatch(initializedAppTC())
-    }, [])
+        dispatch(initializedApp())
+    }, [dispatch])
 
     if (!isInitialized) {
         return (

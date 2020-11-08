@@ -13,7 +13,7 @@ export function Header() {
 
     const logoutHandler = React.useCallback(() => {
         dispatch(logoutTC())
-    }, [isSignIn])
+    }, [dispatch])
 
     return (
         <header>

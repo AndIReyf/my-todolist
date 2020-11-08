@@ -1,16 +1,11 @@
 import {TasksType} from "../components/TodoList/TodoList";
 import {v1} from "uuid";
 import {
-    addTaskAC,
-    changeTaskTitleAC,
-    deleteTaskAC,
-    setTasks,
-    taskReducer,
-    UpdateDomainTaskType,
-    updateTaskAC
+    addTask, changeTaskTitleAC, deleteTask,
+    fetchTasks, taskReducer, UpdateDomainTaskType, updateTask
 } from "../Redux/State/task-reducer";
 import {addTodoListAC} from "../Redux/State/todolist-reducer";
-import {TaskPriority, TaskStatus} from "../api/todolist-api";
+import {TaskPriority, TaskStatus, TaskType} from "../api/todolist-api";
 
 const todoListId1 = v1();
 const todoListId2 = v1();
@@ -40,12 +35,15 @@ const state: TasksType = {
         }
     ]
 }
-describe('Tests for task-reducer', () => {
+
+describe('Task-reducer tests', () => {
+
     test('Add task', () => {
-        const action = addTaskAC({
+        const task: TaskType = {
             todoListId: todoListId2, id: 'ID', status: TaskStatus.New, priority: 0,
             startDate: '', addedDate: '', deadline: '', description: '', order: 0, title: 'Title'
-        })
+        }
+        const action = addTask.fulfilled(task, 'requiredId', {todosId: todoListId2, title: 'Title'})
         const newState = taskReducer(state, action)
 
         expect(newState[todoListId2][0].title).toBe('Title')
@@ -55,7 +53,9 @@ describe('Tests for task-reducer', () => {
     })
     test('Delete task', () => {
         const taskId = state[todoListId2][0].id
-        const newState = taskReducer(state, deleteTaskAC(todoListId2, taskId))
+        const task = {todoListId: todoListId2, taskId: taskId}
+        const action = deleteTask.fulfilled(task, 'requestId', {todoListId: todoListId2, taskId})
+        const newState = taskReducer(state, action)
 
         expect(newState[todoListId2][0].title).toBe('Bread')
         expect(newState[todoListId2][0].status).toBe(TaskStatus.New)
@@ -64,7 +64,7 @@ describe('Tests for task-reducer', () => {
     test('Change task title', () => {
         const title = 'New title'
         const taskId = state[todoListId2][0].id
-        const newState = taskReducer(state, changeTaskTitleAC(todoListId2, taskId, title))
+        const newState = taskReducer(state, changeTaskTitleAC({todoListId: todoListId2, taskId, title}))
 
         expect(newState[todoListId2][0].title).toBe(title)
         expect(newState[todoListId2][1].title).toBe('Bread')
@@ -81,16 +81,19 @@ describe('Tests for task-reducer', () => {
             title: 'Title'
         }
         const taskId = state[todoListId2][0].id
-        const newState = taskReducer(state, updateTaskAC(todoListId2, taskId, model))
+        const updateModel = {domainModel: model, todoListId: todoListId2, taskId}
+        const action = updateTask.fulfilled(updateModel,'requiredId', updateModel)
+
+        const newState = taskReducer(state, action)
 
         expect(newState[todoListId2][0].status).toBe(TaskStatus.Completed)
         expect(newState[todoListId2][0].title).toBe('Title')
         expect(newState[todoListId2][1].status).toBe(TaskStatus.New)
         expect(newState[todoListId2].length).toBe(2)
     })
-    test('Add new property when new todo is added', () => {
-
-        const action = addTodoListAC({id: 'ID', addedDate: '', order: 0, title: 'Title'})
+    test('Add a new property when a new todo is added', () => {
+        const todoList = {id: 'ID', addedDate: '', order: 0, title: 'Title'}
+        const action = addTodoListAC({todoList})
         const newState = taskReducer(state, action)
 
         const keys = Object.keys(newState)
@@ -101,8 +104,9 @@ describe('Tests for task-reducer', () => {
 
         expect(keys.length).toBe(3)
     })
-    test('Tasks should be add for todolist', () => {
-        const action = setTasks(todoListId1, state[todoListId1])
+    test('Tasks should be added for the todolist', () => {
+        const tasks = {tasks: state[todoListId1], todoListId: todoListId1}
+        const action = fetchTasks.fulfilled(tasks, 'requestId', todoListId1)
         const newState = taskReducer({
             todoListId1: []
         }, action)

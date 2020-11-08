@@ -6,8 +6,6 @@ import thunk from "redux-thunk";
 import {loginReducer} from "./State/login-reducer";
 import {configureStore} from "@reduxjs/toolkit";
 
-export type RootReducerType = ReturnType<typeof rootReducer>
-
 const rootReducer = combineReducers({
     tasks: taskReducer,
     todoLists: todolistReducer,
@@ -19,3 +17,5 @@ export const store = configureStore({
     reducer: rootReducer,
     middleware: getDefaultMiddleware => getDefaultMiddleware().prepend(thunk)
 })
+
+export type RootReducerType = ReturnType<typeof rootReducer>

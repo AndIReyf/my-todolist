@@ -1,44 +1,42 @@
-import {Dispatch} from "redux";
 import {authAPI} from "../../api/todolist-api";
 import {setSignInAC} from "./login-reducer";
-import {createSlice, PayloadAction} from "@reduxjs/toolkit";
+import {createAsyncThunk, createSlice, PayloadAction} from "@reduxjs/toolkit";
 
-const initState: InitialStateType = {
-    status: "idle",
-    error: null,
-    initialized: false,
-}
+export const initializedApp = createAsyncThunk('app/initializedApp',
+    async (arg, {dispatch}) => {
 
-// Reducer
+        const res = await authAPI.me()
+        if (res.data.resultCode === 0) {
+            dispatch(setSignInAC({isSignIn: true}))
+        }
+    }
+)
+
 const slice = createSlice({
     name: 'app',
-    initialState: initState,
+    initialState: {
+        status: "idle",
+        error: null,
+        initialized: false,
+    } as InitialStateType,
     reducers: {
-        setAppErrorMessageAC(state, action: PayloadAction<{errorMessage: string | null}>) {
+        setAppErrorMessageAC(state, action: PayloadAction<{ errorMessage: string | null }>) {
             state.error = action.payload.errorMessage
         },
-        setAppStatusAC(state, action: PayloadAction<{status: StatusType}>) {
+        setAppStatusAC(state, action: PayloadAction<{ status: StatusType }>) {
             state.status = action.payload.status
-        },
-        setAppInitializedAC(state, action: PayloadAction<{isInitialized: boolean}>) {
-            state.initialized = action.payload.isInitialized
         }
+    },
+    extraReducers: builder => {
+        builder
+            .addCase(initializedApp.fulfilled, (state) => {
+                state.initialized = true
+            })
     }
 })
 
 export const appReducer = slice.reducer
-export const {setAppErrorMessageAC, setAppStatusAC, setAppInitializedAC} = slice.actions
-
-// Thunk Creator
-export const initializedAppTC = () => (dispatch: Dispatch) => {
-    authAPI.me()
-        .then(res => {
-            if (res.data.resultCode === 0) {
-                dispatch(setSignInAC({isSignIn: true}))
-            }
-            dispatch(setAppInitializedAC({isInitialized: true}))
-        })
-}
+export const {setAppErrorMessageAC, setAppStatusAC} = slice.actions
 
 // Types
 export type StatusType = 'idle' | 'loading' | 'succeeded' | 'failed'

@@ -4,12 +4,10 @@ import {setAppStatusAC, StatusType} from "./app-reducer";
 import {handleServerNetworkError} from "../../utils/handle-error";
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 
-const initState: Array<TodoListDomainType> = []
-
 // Reducer
 const slice = createSlice({
     name: 'todolist',
-    initialState: initState,
+    initialState: [] as Array<TodoListDomainType>,
     reducers: {
         addTodoListAC(state, action: PayloadAction<{ todoList: TodoListType }>) {
             state.unshift({...action.payload.todoList, filter: 'all', entityStatus: "idle"})

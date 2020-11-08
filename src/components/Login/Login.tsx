@@ -13,7 +13,7 @@ import {useFormik} from "formik";
 import {useDispatch, useSelector} from "react-redux";
 import {loginTC} from "../../Redux/State/login-reducer";
 import {RootReducerType} from "../../Redux/store";
-import { Redirect } from "react-router-dom";
+import {Redirect} from "react-router-dom";
 
 export function Login() {
 
@@ -46,10 +46,11 @@ export function Login() {
                     <FormControl>
                         <FormLabel>
                             <p>
-                                To sign in get registered <a href="https://social-network.samuraijs.com/"
-                                                             target="_blank">
-                                <strong>here</strong>
-                            </a>
+                                To sign in get registered
+                                <a href="https://social-network.samuraijs.com/" rel="noopener noreferrer"
+                                   target="_blank">
+                                    <strong> here</strong>
+                                </a>
                             </p>
                             <p>
                                 or use common test account credentials:

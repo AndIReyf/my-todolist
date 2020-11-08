@@ -4,12 +4,10 @@ import {authAPI, LoginParamsType} from "../../api/todolist-api";
 import {handleServerAppError, handleServerNetworkError} from "../../utils/handle-error";
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 
-const initState = {isSignIn: false}
-
 // Reducer
 const slice = createSlice({
     name: 'auth',
-    initialState: initState,
+    initialState: {isSignIn: false},
     reducers: {
         setSignInAC(state, action: PayloadAction<{isSignIn: boolean}>) {
            state.isSignIn = action.payload.isSignIn

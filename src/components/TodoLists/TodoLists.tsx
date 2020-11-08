@@ -26,7 +26,7 @@ export function TodoLists() {
         // If user is not sign in, app do not fetch todos.
         if (!isSignIn) return
         dispatch(fetchTodoListsTC())
-    }, [])
+    }, [dispatch, isSignIn])
 
     const deleteTodoList = React.useCallback((todoListId: string) => {
         dispatch(deleteTodoListTC(todoListId))
